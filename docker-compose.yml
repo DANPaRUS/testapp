@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+    php-apache-environment:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        container_name: testapp
+        image: php:8.1-apache
+        hostname: localhost
+        volumes:
+            - ./:/var/www/html/
+            - ./.docker/php/php.ini-development:/usr/local/etc/php/php.ini-development
+            - ./.docker/php/ini/conf.d/memory_limit.ini:/usr/local/etc/php/ini/conf.d/memory_limit.ini
+            - ./.docker/mysql/my.cnf:/usr/local/etc/mysql/my.cnf
+#            - ./.docker/php/ini:/usr/local/etc/php
+#            - ./.docker/apache/vhost.conf:/etc/apache2/sites-enabled/000-default.conf
+        ports:
+            - 8002:80
+    db:
+        image: postgres
+        container_name: pgdb
+        restart: always
+        ports:
+            - "54320:5432"
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: admin
+        volumes:
+            - pgdb_data:/var/lib/postgresql/data
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        restart: always
+        ports:
+            - "5050:80"
+        environment:
+            PGADMIN_DEFAULT_EMAIL: parusdan@vk.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+        volumes:
+        - pgadmin_data:/var/lib/pgadmin
+    composer:
+        image: composer
+volumes:
+  pgdb_data:
+  pgadmin_data:
+
+
+
